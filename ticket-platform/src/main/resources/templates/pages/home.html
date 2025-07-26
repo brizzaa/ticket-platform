@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" html lang="en">
+
+<head th:replace="~{fragments/head :: head('Homepage')}" />
+
+<body>
+    <header>
+        <nav th:replace="~{fragments/navbar :: navbar('Nav')}"></nav>
+    </header>
+
+    <main>
+        <h1>HomePage Template</h1>
+    </main>
+
+
+    <footer>
+        <script th:replace="~{fragments/scripts :: script}"></script>
+    </footer>
+</body>
+
+</html>
