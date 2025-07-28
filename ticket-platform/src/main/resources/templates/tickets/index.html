@@ -1,13 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
-<head th:replace="~{fragments/head :: head('Tickets')}" />
+<head th:replace="~{fragments/head :: head('Ticket List')}" />
 
 <body>
     <header>
         <nav th:replace="~{fragments/navbar :: navbar}"></nav>
     </header>
 
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col">Ticket ID</th>
+                <th scope="col">Ticket Name</th>
+                <th scope="col">Stato</th>
+                <th scope="col">Operatore</th>
+                <th scope="col"> </th>
+            </tr>
+        </thead>
+        <tbody th:object="${tickets}">
+            <tr th:each="ticket : ${tickets}">
+                <th scope="row" th:text="${ticket.id}"></th>
+                <td th:text="${ticket.nome}"></td>
+                <td th:text="${ticket.stato}"></td>
+                <td th:text="${ticket.operatore.username}"></td>
+                <td>
+                    <a class="btn btn-primary btn-sm" th:href="@{/tickets/{id}(id=${ticket.id})}">
+                        Dettagli</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 
 
 
@@ -15,13 +38,7 @@
 
 
 
-
-
-
-
-
-
-    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <footer th:replace=" ~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: script}"></script>
 </body>
 

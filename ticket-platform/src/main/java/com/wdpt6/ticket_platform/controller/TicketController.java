@@ -26,14 +26,15 @@ public class TicketController {
 
     @GetMapping
     public String listaTicket(Model model) {
-        List<Ticket> ticketList = ticketRepository.findAll();
-        model.addAttribute("ticketList", ticketList);
+        List<Ticket> tickets = ticketRepository.findAll();
+        model.addAttribute("tickets", tickets);
         return "tickets/index";
     }
 
     @GetMapping("/{id}")
     public String dettaglioTicket(@PathVariable Integer id, Model model) {
-        model.addAttribute("ticket", ticketRepository.findById(id).get());
+        Ticket ticket = ticketRepository.findById(id).get();
+        model.addAttribute("ticket", ticket);
         return "tickets/show";
     }
 

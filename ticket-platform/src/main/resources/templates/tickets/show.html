@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{fragments/head :: head('Ticket')}"></head>
+
+<body>
+    <header>
+        <nav th:replace="~{fragments/navbar :: navbar}"></nav>
+    </header>
+
+    <main>
+        <section class="container-fluid text-center">
+            <h2 th:text="${ticket.nome}"></h2>
+            <p th:text="${ticket.descrizione}"></p>
+            <p th:text="${ticket.stato}"></p>
+            <p th:text="${ticket.operatore}"></p>
+
+            // INSERISCI NEL DB LE NOTE =>> CRUD
+            <p th:text="${ticket.note}"></p>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments/footer :: footer}"></footer>
+    <script th:replace="~{fragments/scripts :: script}"></script>
+</body>
+
+</html>

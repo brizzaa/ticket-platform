@@ -20,16 +20,19 @@ import java.util.List;
 @Table(name = "tickets")
 public class Ticket {
 
+    @Column(name = "nome")
+    private String nome;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "descrizione")
-    @NotBlank
+    @NotBlank(message = "descrivi il problema")
     @Lob
     private String descrizione;
 
-    private enum StatusEnum {
+    private enum Status {
         DA_FARE,
         IN_CORSO,
         COMPLETATO
@@ -37,9 +40,8 @@ public class Ticket {
 
     // testare
     @Column(name = "stato")
-    @NotBlank
     @Enumerated(EnumType.STRING)
-    private StatusEnum stato;
+    private Status stato = Status.DA_FARE;
 
     @ManyToOne
     @JoinColumn(name = "operatore_id")
@@ -47,6 +49,14 @@ public class Ticket {
 
     @OneToMany(mappedBy = "ticket")
     private List<Nota> note;
+
+    public String getNome() {
+        return this.nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
 
     public Integer getId() {
         return this.id;
@@ -64,11 +74,11 @@ public class Ticket {
         this.descrizione = descrizione;
     }
 
-    public StatusEnum getStato() {
+    public Status getStato() {
         return this.stato;
     }
 
-    public void setStato(StatusEnum stato) {
+    public void setStato(Status stato) {
         this.stato = stato;
     }
 
