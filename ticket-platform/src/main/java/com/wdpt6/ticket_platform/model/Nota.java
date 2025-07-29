@@ -36,9 +36,9 @@ public class Nota {
     private Ticket ticket;
 
     @ManyToOne
-    @JoinColumn(name = "operatore_id", nullable = false)
+    @JoinColumn(name = "autore_id", nullable = false)
     @NotBlank
-    private Operatore operatore;
+    private Operatore autore;
 
     public Integer getId() {
         return id;
@@ -72,11 +72,16 @@ public class Nota {
         this.ticket = ticket;
     }
 
-    public Operatore getOperatore() {
-        return operatore;
+    public Operatore getAutore() {
+        return autore;
     }
 
-    public void setOperatore(Operatore operatore) {
-        this.operatore = operatore;
+    public void setAutore(Operatore autore) {
+        this.autore = autore;
+    }
+
+    @Override
+    public String toString() {
+        return this.testo + " - " + this.dataCreazione + " - " + this.autore.getUsername();
     }
 }

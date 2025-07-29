@@ -93,7 +93,7 @@ public class Operatore {
 
     @Override
     public String toString() {
-        return "preso in carico da: " + this.username + ", operatore numero: " + this.id;
+        return "Preso in carico da: " + this.username + ", operatore numero: " + this.id;
     }
 
 }
