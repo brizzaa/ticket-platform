@@ -1,4 +1,4 @@
-package com.wdpt6.ticket_platform.controller;
+package com.wdpt6.ticket_platform.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

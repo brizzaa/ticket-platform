@@ -8,23 +8,27 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 
-// Classe Nota
 @Entity
 @Table(name = "note")
 public class Nota {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     @Column(name = "testo")
+    @Lob
     private String testo;
 
     // forse meglio L'ora??
     @Column(name = "data_creazione")
+    @PastOrPresent(message = "la data non può essere nel futuro")
     private LocalDate dataCreazione;
 
     @ManyToOne
@@ -32,14 +36,15 @@ public class Nota {
     private Ticket ticket;
 
     @ManyToOne
-    @JoinColumn(name = "autore_id")
-    private Operatore autore;
+    @JoinColumn(name = "operatore_id", nullable = false)
+    @NotBlank
+    private Operatore operatore;
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -67,13 +72,11 @@ public class Nota {
         this.ticket = ticket;
     }
 
-    public Operatore getAutore() {
-        return autore;
+    public Operatore getOperatore() {
+        return operatore;
     }
 
-    public void setAutore(Operatore autore) {
-        this.autore = autore;
+    public void setOperatore(Operatore operatore) {
+        this.operatore = operatore;
     }
 }
-
-// Classe Operatore

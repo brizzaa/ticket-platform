@@ -12,7 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.wdpt6.ticket_platform.model.Categoria;
+import com.wdpt6.ticket_platform.model.Operatore;
 import com.wdpt6.ticket_platform.model.Ticket;
+import com.wdpt6.ticket_platform.repository.CategoriaRepository;
+import com.wdpt6.ticket_platform.repository.NotaRepository;
+import com.wdpt6.ticket_platform.repository.OperatoreRepository;
 import com.wdpt6.ticket_platform.repository.TicketRepository;
 
 import jakarta.validation.Valid;
@@ -21,17 +26,27 @@ import jakarta.validation.Valid;
 @RequestMapping("/tickets")
 public class TicketController {
 
+    // dependency injection
     @Autowired
     private TicketRepository ticketRepository;
 
-    @GetMapping
+    @Autowired
+    private NotaRepository notaRepository;
+
+    @Autowired
+    private OperatoreRepository operatoreRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
+
+    @GetMapping // get su ("tickets")
     public String listaTicket(Model model) {
         List<Ticket> tickets = ticketRepository.findAll();
         model.addAttribute("tickets", tickets);
         return "tickets/index";
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") // ticket singolo
     public String dettaglioTicket(@PathVariable Integer id, Model model) {
         Ticket ticket = ticketRepository.findById(id).get();
         model.addAttribute("ticket", ticket);
@@ -40,13 +55,21 @@ public class TicketController {
 
     @GetMapping("/create")
     public String createTicketForm(Model model) {
+
+        List<Categoria> categorie = categoriaRepository.findAll();
+        List<Operatore> operatori = operatoreRepository.findAll();
+
+        model.addAttribute("categorie", categorie);
+        model.addAttribute("operatori", operatori);
         model.addAttribute("ticket", new Ticket());
         return "tickets/create";
     }
 
     @PostMapping("/create")
     public String store(Model model, @Valid @ModelAttribute("ticket") Ticket ticket, BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
+            System.out.println(bindingResult.getAllErrors());
             return "tickets/create";
         }
         ticketRepository.save(ticket);

@@ -11,9 +11,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -21,6 +23,7 @@ import java.util.List;
 public class Ticket {
 
     @Column(name = "nome")
+    @NotBlank
     private String nome;
 
     @Id
@@ -38,14 +41,20 @@ public class Ticket {
         COMPLETATO
     }
 
-    // testare
     @Column(name = "stato")
     @Enumerated(EnumType.STRING)
-    private Status stato = Status.DA_FARE;
+    private Status stato;
+
+    @Column(name = "data_creazione")
+    private LocalDateTime dataCreazione;
 
     @ManyToOne
     @JoinColumn(name = "operatore_id")
     private Operatore operatore;
+
+    @ManyToOne
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
 
     @OneToMany(mappedBy = "ticket")
     private List<Nota> note;
@@ -82,6 +91,14 @@ public class Ticket {
         this.stato = stato;
     }
 
+    public LocalDateTime getDataCreazione() {
+        return this.dataCreazione;
+    }
+
+    public void setDataCreazione(LocalDateTime dataCreazione) {
+        this.dataCreazione = dataCreazione;
+    }
+
     public Operatore getOperatore() {
         return this.operatore;
     }
@@ -94,8 +111,22 @@ public class Ticket {
         return this.note;
     }
 
-    public void setNota(List<Nota> note) {
+    public void setNote(List<Nota> note) {
         this.note = note;
     }
 
+    public Categoria getCategoria() {
+        return this.categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    // METODI ALLA CREAZIONE DI UN NUOVO TICKET
+    @PrePersist
+    public void prePersist() {
+        this.dataCreazione = LocalDateTime.now();
+        this.stato = Status.DA_FARE;
+    }
 }
