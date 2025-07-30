@@ -31,7 +31,7 @@ public class Ticket {
     private Integer id;
 
     @Column(name = "descrizione")
-    @NotBlank(message = "descrivi il problema")
+    @NotBlank(message = "La descrizione non può essere vuota")
     @Lob
     private String descrizione;
 

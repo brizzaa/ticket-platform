@@ -28,7 +28,7 @@ public class Nota {
 
     // forse meglio L'ora??
     @Column(name = "data_creazione")
-    @PastOrPresent(message = "la data non può essere nel futuro")
+    @PastOrPresent
     private LocalDate dataCreazione;
 
     @ManyToOne

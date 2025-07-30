@@ -10,11 +10,10 @@
 
     <main>
         <section class="container-fluid text-center" th:object="${ticket}">
-            <h2 th:text="*{nome}"></h2>
+            <h2 th:text="*{nome}" class="mb-5"></h2>
             <p th:text="*{descrizione}"></p>
             <p th:text="*{stato}"></p>
             <p th:text="*{operatore.username}"></p>
-
             <p th:each="nota : ${ticket.note}" th:text="${nota}"></p>
         </section>
     </main>

@@ -57,7 +57,7 @@ public class TicketController {
     public String createTicketForm(Model model) {
 
         List<Categoria> categorie = categoriaRepository.findAll();
-        List<Operatore> operatori = operatoreRepository.findAll();
+        List<Operatore> operatori = operatoreRepository.findByDisponibile(true);
 
         model.addAttribute("categorie", categorie);
         model.addAttribute("operatori", operatori);

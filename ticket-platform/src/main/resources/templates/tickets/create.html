@@ -39,7 +39,11 @@
         </div>
 
         <div class="mt-3 col-6">
-            // agg operatore
+            <label for="operatore" class="form-label">Operatore</label>
+            <select th:field="*{operatore.id}">
+                <option th:each="operatore : ${operatori}" th:value="${operatore.id}" th:text="${operatore.username}">
+                    Operatore</option>
+            </select>
         </div>
 
         <div class="mt-3">
@@ -49,20 +53,6 @@
 
 
     </form>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>

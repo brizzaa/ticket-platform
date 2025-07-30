@@ -4,12 +4,11 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
@@ -29,19 +28,14 @@ public class Operatore {
     @NotBlank
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Disponibilità disponibile;
+    @Column(name = "disponibile")
+    private boolean disponibile;
 
     @OneToMany(mappedBy = "operatore")
     private List<Ticket> ticketAssegnati;
 
     @OneToMany(mappedBy = "autore")
     private List<Nota> noteScritte;
-
-    public enum Disponibilità {
-        DISPONIBILE,
-        NON_DISPONIBILE
-    }
 
     public Integer getId() {
         return this.id;
@@ -67,11 +61,15 @@ public class Operatore {
         this.password = password;
     }
 
-    public Disponibilità getDisponibile() {
+    public boolean isDisponibile() {
         return this.disponibile;
     }
 
-    public void setDisponibile(Disponibilità disponibile) {
+    public boolean getDisponibile() {
+        return this.disponibile;
+    }
+
+    public void setDisponibile(boolean disponibile) {
         this.disponibile = disponibile;
     }
 
@@ -89,6 +87,11 @@ public class Operatore {
 
     public void setNoteScritte(List<Nota> noteScritte) {
         this.noteScritte = noteScritte;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.disponibile = true;
     }
 
     @Override
