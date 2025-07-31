@@ -14,6 +14,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ public class Ticket {
     @Lob
     private String descrizione;
 
-    private enum Status {
+    public enum Status {
         DA_FARE,
         IN_CORSO,
         COMPLETATO
@@ -49,11 +50,13 @@ public class Ticket {
     private LocalDateTime dataCreazione;
 
     @ManyToOne
-    @JoinColumn(name = "operatore_id")
+    @JoinColumn(name = "operatore_id", nullable = false)
+    @NotNull(message = "L'operatore è obbligatorio")
     private Operatore operatore;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
+    @NotNull(message = "La categoria è obbligatoria")
     private Categoria categoria;
 
     @OneToMany(mappedBy = "ticket")

@@ -1,6 +1,6 @@
 package com.wdpt6.ticket_platform.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +10,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "note")
@@ -24,20 +25,20 @@ public class Nota {
 
     @Column(name = "testo")
     @Lob
+    @NotBlank(message = "Il testo della nota non può essere vuoto")
     private String testo;
 
-    // forse meglio L'ora??
     @Column(name = "data_creazione")
-    @PastOrPresent
-    private LocalDate dataCreazione;
+    private LocalDateTime dataCreazione;
 
     @ManyToOne
-    @JoinColumn(name = "ticket_id")
+    @JoinColumn(name = "ticket_id", nullable = false)
+    @NotNull
     private Ticket ticket;
 
     @ManyToOne
     @JoinColumn(name = "autore_id", nullable = false)
-    @NotBlank
+    @NotNull
     private Operatore autore;
 
     public Integer getId() {
@@ -56,11 +57,11 @@ public class Nota {
         this.testo = testo;
     }
 
-    public LocalDate getDataCreazione() {
+    public LocalDateTime getDataCreazione() {
         return dataCreazione;
     }
 
-    public void setDataCreazione(LocalDate dataCreazione) {
+    public void setDataCreazione(LocalDateTime dataCreazione) {
         this.dataCreazione = dataCreazione;
     }
 
@@ -78,6 +79,11 @@ public class Nota {
 
     public void setAutore(Operatore autore) {
         this.autore = autore;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.dataCreazione = LocalDateTime.now();
     }
 
     @Override

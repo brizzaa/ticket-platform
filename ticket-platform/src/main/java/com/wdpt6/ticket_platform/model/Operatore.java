@@ -94,6 +94,13 @@ public class Operatore {
         this.disponibile = true;
     }
 
+    public boolean hasActiveTickets() {
+        return this.ticketAssegnati != null &&
+                this.ticketAssegnati.stream()
+                        .anyMatch(ticket -> ticket.getStato() == Ticket.Status.DA_FARE ||
+                                ticket.getStato() == Ticket.Status.IN_CORSO);
+    }
+
     @Override
     public String toString() {
         return "Preso in carico da: " + this.username + ", operatore numero: " + this.id;

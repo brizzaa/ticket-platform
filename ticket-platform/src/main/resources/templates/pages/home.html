@@ -8,18 +8,17 @@
         <nav th:replace="~{fragments/navbar :: navbar}"></nav>
     </header>
 
-
-
-
-
-
-
-
-
-
-
-
-
+    <main class="container mt-4">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1>Benvenuto nel Sistema di Gestione Ticket</h1>
+                <p class="lead">Sistema per la gestione delle richieste di supporto</p>
+                <a href="/tickets" class="btn btn-primary btn-lg">
+                    <i class="fas fa-ticket-alt"></i> Visualizza Tickets
+                </a>
+            </div>
+        </div>
+    </main>
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: script}"></script>

@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 
-<head th:replace="~{fragments/head :: head('Crea Ticket')}" />
+<head th:replace="~{fragments/head :: head('Modifica Ticket')}" />
 
 <body>
     <header>
         <nav th:replace="~{fragments/navbar :: navbar}"></nav>
     </header>
 
-    <h1 class="text-center">Crea un ticket</h1>
+    <h1 class="text-center">Modifica ticket</h1>
 
-    <form th:action="@{/tickets/create}" method="POST" th:object="${ticket}"
+    <form th:action="@{/tickets/edit/{id}(id=${ticket.id})}" method="POST" th:object="${ticket}"
         class="mt-3 d-flex flex-column align-items-center text-center">
 
         <div th:if="${#fields.hasErrors()}" class="alert alert-danger">
@@ -25,7 +25,7 @@
         </div>
 
         <div class="mt-3 col-6">
-            <label for="descrizione" class="form-label">Descrivi il problema</label>
+            <label for="descrizione" class="form-label">Descrizione</label>
             <textarea name="descrizione" id="descrizione" th:field="*{descrizione}" class="form-control" rows="4"
                 required></textarea>
         </div>
@@ -48,9 +48,17 @@
             </select>
         </div>
 
+        <div class="mt-3 col-6">
+            <label for="stato" class="form-label">Stato</label>
+            <select th:field="*{stato}" class="form-control">
+                <option th:each="stato : ${stati}" th:value="${stato}" th:text="${stato}">
+                </option>
+            </select>
+        </div>
+
         <div class="mt-3">
-            <button type="submit" class="btn btn-primary mt-3">Crea ticket</button>
-            <a href="/tickets" class="btn btn-secondary mt-3">Annulla</a>
+            <button type="submit" class="btn btn-primary mt-3">Salva modifiche</button>
+            <a th:href="@{/tickets/{id}(id=${ticket.id})}" class="btn btn-secondary mt-3">Annulla</a>
         </div>
     </form>
 

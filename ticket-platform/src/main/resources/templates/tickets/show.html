@@ -9,16 +9,40 @@
     </header>
 
     <main>
-        <section class="container-fluid text-center" th:object="${ticket}">
+        <section class="container-fluid text-center col-6" th:object="${ticket}">
             <h2 th:text="*{nome}" class="mb-5"></h2>
-            <p th:text="*{descrizione}"></p>
-            <p th:text="*{stato}"></p>
-            <p th:text="*{operatore.username}"></p>
-            <p th:each="nota : ${ticket.note}" th:text="${nota}"></p>
+            <p><strong>ID:</strong> <span th:text="*{id}"></span></p>
+            <p><strong>Descrizione:</strong> <span th:text="*{descrizione}"></span></p>
+            <p><strong>Stato:</strong> <span th:text="*{stato}"></span></p>
+            <p><strong>Categoria:</strong> <span th:text="*{categoria.nome}"></span></p>
+            <p><strong>Operatore:</strong> <span th:text="*{operatore.username}"></span></p>
+
+
+            <h4>Aggiungi una nota</h4>
+            <form th:action="@{/tickets/{id}/note(id=${ticket.id})}" method="POST" class="mt-3">
+                <div class="mb-3">
+                    <label for="testo">Testo della nota:</label>
+                    <textarea id="testo" name="testo" rows="3" class="form-control"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Aggiungi Nota</button>
+            </form>
+
+            <div class="mt-4 mb-4">
+                <a th:href="@{/tickets/edit/{id}(id=${ticket.id})}" class="btn btn-warning">Modifica</a>
+                <a th:href="@{/tickets}" class="btn btn-secondary">Torna alla Lista</a>
+            </div>
+
+            <h3>Note del Ticket</h3>
+            <div th:if="${#lists.isEmpty(ticket.note)}">
+                <p>Nessuna nota presente.</p>
+            </div>
+            <div th:each="nota : ${ticket.note}" class="border p-4 m-3">
+                <p><strong th:text="${nota.autore.username}"></strong> - <span
+                        th:text="${#temporals.format(nota.dataCreazione, 'dd/MM/yyyy HH:mm')}"></span></p>
+                <p th:text="${nota.testo}"></p>
+            </div>
         </section>
     </main>
-
-    <form action="" method="POST"></form>
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: script}"></script>
