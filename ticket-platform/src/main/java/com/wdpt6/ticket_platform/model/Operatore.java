@@ -7,6 +7,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -21,11 +24,11 @@ public class Operatore {
     private Integer id;
 
     @Column(name = "username")
-    @NotBlank
+    @NotBlank(message = "L'username non puo essere vuoto")
     private String username;
 
     @Column(name = "password")
-    @NotBlank
+    @NotBlank(message = "La password non puo essere vuota")
     private String password;
 
     @Column(name = "disponibile")
@@ -36,6 +39,10 @@ public class Operatore {
 
     @OneToMany(mappedBy = "autore")
     private List<Nota> noteScritte;
+
+    @ManyToMany
+    @JoinTable(name = "ruoli", joinColumns = @JoinColumn(name = "operatore_id"), inverseJoinColumns = @JoinColumn(name = "id"))
+    private List<Ruoli> roles;
 
     public Integer getId() {
         return this.id;
@@ -89,16 +96,31 @@ public class Operatore {
         this.noteScritte = noteScritte;
     }
 
+    public List<Ruoli> getRoles() {
+        return this.roles;
+    }
+
+    public void setRoles(List<Ruoli> roles) {
+        this.roles = roles;
+    }
+
     @PrePersist
     public void prePersist() {
         this.disponibile = true;
     }
 
     public boolean hasActiveTickets() {
-        return this.ticketAssegnati != null &&
-                this.ticketAssegnati.stream()
-                        .anyMatch(ticket -> ticket.getStato() == Ticket.Status.DA_FARE ||
-                                ticket.getStato() == Ticket.Status.IN_CORSO);
+        if (this.ticketAssegnati == null) {
+            return false;
+        }
+
+        for (Ticket ticket : this.ticketAssegnati) {
+            Ticket.Status stato = ticket.getStato();
+            if (stato == Ticket.Status.DA_FARE || stato == Ticket.Status.IN_CORSO) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
