@@ -1,56 +1,89 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 
-<head th:replace="~{fragments/head :: head('Ticket List')}" />
+<head th:replace="~{fragments/head :: head('Lista Ticket')}" />
 
 <body>
     <header>
         <nav th:replace="~{fragments/navbar :: navbar}"></nav>
     </header>
 
+    <div class="container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold">Lista Ticket</h2>
+            <!-- solo admin vede il create button -->
+            <a class="btn btn-primary" th:href="@{/tickets/create}" sec:authorize="hasAuthority('ADMIN')">
+                <i class="fas fa-plus me-2"></i>Nuovo Ticket
+            </a>
+        </div>
 
-    <section class="d-flex justify-content-center mb-5">
-        <form method="GET" th:action="@{/tickets}" class="mr-3 row">
-            <div>
-                <label for="search" class="mr-2">Cerca</label>
-                <input type="text" id="search" name="search" th:value="${search}" placeholder="Titolo ticket"
-                    class="m-2">
-            </div>
-            <button type="submit" class="btn btn-primary ml-3">Cerca</button>
-        </form>
-    </section>
+        <div class="col-md-12 d-flex justify-content-center mb-4">
+            <form method="GET" th:action="@{/tickets}" class="d-flex">
+                <input type="text" name="search" th:value="${search}" placeholder="Cerca per titolo"
+                    class="form-control me-2">
+                <button type="submit" class="btn btn-outline-primary">Cerca</button>
+            </form>
+        </div>
+    </div>
 
-    <section class="d-flex justify-content-center p-3">
-        <a class="btn btn-primary" th:href="@{/tickets/create}">Nuovo Ticket</a>
-    </section>
+    <!-- Ttable -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col"> ID</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Stato</th>
+                    <th scope="col">Operatore</th>
+                    <th scope="col">Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ticket : ${tickets}">
+                    <td th:text="${ticket.id}"></td>
+                    <td th:text="${ticket.nome}"></td>
+                    <td>
+                        <span class="badge bg-info" th:text="${ticket.categoria.nome}"></span>
+                    </td>
+                    <td>
+                        <span class="badge" th:classappend="${ticket.stato.name() == 'DA_FARE'} ? 'bg-warning text-dark' : 
+                                                 (${ticket.stato.name() == 'IN_CORSO'} ? 'bg-primary' : 'bg-success')"
+                            th:text="${ticket.stato}"></span>
+                    </td>
+                    <td th:text="${ticket.operatore.username}"></td>
+                    <td>
+                        <a class="btn btn-primary btn-sm" th:href="@{/tickets/{id}(id=${ticket.id})}">
+                            Dettagli
+                        </a>
+                        <!-- gli admin possono modificare -->
+                        <a class="btn btn-warning btn-sm" th:href="@{/tickets/edit/{id}(id=${ticket.id})}"
+                            sec:authorize="hasAuthority('ADMIN')">
+                            Modifica
+                        </a>
+                        <!--  gli admin possono eliminare -->
+                        <form th:action="@{/tickets/delete/{id}(id=${ticket.id})}" method="POST"
+                            style="display: inline;" sec:authorize="hasAuthority('ADMIN')">
+                            <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Sei sicuro di voler eliminare questo ticket?')">
+                                Elimina
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <table class="table table-striped table-bordered table-hover">
-        <thead class="thead-light">
-            <tr>
-                <th scope="col"> ID</th>
-                <th scope="col">Nome</th>
-                <th scope="col">Categoria</th>
-                <th scope="col">Stato</th>
-                <th scope="col">Operatore</th>
-                <th scope="col">Azioni</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="ticket : ${tickets}">
-                <th scope="row" th:text="${ticket.id}"></th>
-                <td th:text="${ticket.nome}"></td>
-                <td th:text="${ticket.categoria.nome}"></td>
-                <td th:text="${ticket.stato}"></td>
-                <td th:text="${ticket.operatore.username}"></td>
-                <td>
-                    <a class="btn btn-primary btn-sm" th:href="@{/tickets/{id}(id=${ticket.id})}">
-                        Dettagli</a>
-                    <a class="btn btn-warning btn-sm" th:href="@{/tickets/edit/{id}(id=${ticket.id})}">
-                        Modifica</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <!-- se nessun ticket -->
+    <div class="text-center py-4" th:if="${tickets.isEmpty()}">
+        <p class="text-muted">Nessun ticket trovato</p>
+        <!-- gli admin possono creare ticket -->
+        <a class="btn btn-primary" th:href="@{/tickets/create}" sec:authorize="hasAuthority('ADMIN')">
+            Crea nuovo ticket
+        </a>
+    </div>
+    </div>
 
     <footer th:replace="~{fragments/footer :: footer}"></footer>
     <script th:replace="~{fragments/scripts :: script}"></script>

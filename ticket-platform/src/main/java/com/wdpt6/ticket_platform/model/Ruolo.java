@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "ruoli")
-public class Ruoli {
+public class Ruolo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

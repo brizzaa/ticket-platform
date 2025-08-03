@@ -9,7 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.wdpt6.ticket_platform.model.Operatore;
-import com.wdpt6.ticket_platform.model.Ruoli;
+import com.wdpt6.ticket_platform.model.Ruolo;
 
 // facciamo il wrapper per spring
 public class DatabaseUserDetails implements UserDetails {
@@ -26,9 +26,10 @@ public class DatabaseUserDetails implements UserDetails {
 
         this.authorities = new HashSet<>();
 
-        for (Ruoli ruolo : operatore.getRoles()) {
-            this.authorities.add(new SimpleGrantedAuthority(ruolo.getRuolo()));
-
+        if (operatore.getRoles() != null) {
+            for (Ruolo ruolo : operatore.getRoles()) {
+                this.authorities.add(new SimpleGrantedAuthority(ruolo.getRuolo()));
+            }
         }
     }
 
@@ -59,6 +60,11 @@ public class DatabaseUserDetails implements UserDetails {
 
     @Override
     public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
         return true;
     }
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -40,9 +41,9 @@ public class Operatore {
     @OneToMany(mappedBy = "autore")
     private List<Nota> noteScritte;
 
-    @ManyToMany
-    @JoinTable(name = "ruoli", joinColumns = @JoinColumn(name = "operatore_id"), inverseJoinColumns = @JoinColumn(name = "id"))
-    private List<Ruoli> roles;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "operatore_ruolo", joinColumns = @JoinColumn(name = "operatore_id"), inverseJoinColumns = @JoinColumn(name = "ruolo_id"))
+    private List<Ruolo> roles;
 
     public Integer getId() {
         return this.id;
@@ -96,11 +97,11 @@ public class Operatore {
         this.noteScritte = noteScritte;
     }
 
-    public List<Ruoli> getRoles() {
+    public List<Ruolo> getRoles() {
         return this.roles;
     }
 
-    public void setRoles(List<Ruoli> roles) {
+    public void setRoles(List<Ruolo> roles) {
         this.roles = roles;
     }
 

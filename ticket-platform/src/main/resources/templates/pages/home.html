@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
 
 <head th:replace="~{fragments/head :: head('Home')}" />
 
@@ -12,10 +12,16 @@
         <div class="row">
             <div class="col-12 text-center">
                 <h1>Benvenuto nel Sistema di Gestione Ticket</h1>
-                <p class="lead">Sistema per la gestione delle richieste di supporto</p>
-                <a href="/tickets" class="btn btn-primary btn-lg">
-                    <i class="fas fa-ticket-alt"></i> Visualizza Tickets
-                </a>
+                <div class="d-flex gap-3 justify-content-center">
+                    <a href="/tickets" class="btn btn-primary btn-lg">
+                        <i class="fas fa-ticket-alt"></i> Visualizza Tickets
+                    </a>
+
+                    <!-- crea ticket (SOLO ADM) -->
+                    <a href="/tickets/create" class="btn btn-success btn-lg" sec:authorize="hasAuthority('ADMIN')">
+                        <i class="fas fa-plus"></i> Nuovo Ticket
+                    </a>
+                </div>
             </div>
         </div>
     </main>

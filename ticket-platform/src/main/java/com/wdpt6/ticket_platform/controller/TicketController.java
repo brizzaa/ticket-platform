@@ -23,6 +23,7 @@ import com.wdpt6.ticket_platform.repository.OperatoreRepository;
 import com.wdpt6.ticket_platform.repository.TicketRepository;
 
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @Controller
 @RequestMapping("/tickets")
@@ -33,15 +34,15 @@ public class TicketController {
     private TicketRepository ticketRepository;
 
     @Autowired
-    private NotaRepository notaRepository;
-
-    @Autowired
     private OperatoreRepository operatoreRepository;
 
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    @GetMapping // get su ("tickets")
+    @Autowired
+    private NotaRepository notaRepository;
+
+    @GetMapping // get su ("tickets") index
     public String listaTicket(Model model, @RequestParam(required = false) String search) {
         List<Ticket> tickets;
 
@@ -58,6 +59,7 @@ public class TicketController {
         return "tickets/index";
     }
 
+    // show
     @GetMapping("/{id}")
     public String dettaglioTicket(@PathVariable Integer id, Model model) {
         Optional<Ticket> ticketOpt = ticketRepository.findById(id);
@@ -71,9 +73,12 @@ public class TicketController {
         return "tickets/show";
     }
 
+    // create
     @GetMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String createTicketForm(Model model) {
         List<Categoria> categorie = categoriaRepository.findAll();
+        // solo gli operatori disponibili possono essere assegnati
         List<Operatore> operatori = operatoreRepository.findByDisponibile(true);
 
         model.addAttribute("categorie", categorie);
@@ -82,23 +87,29 @@ public class TicketController {
         return "tickets/create";
     }
 
+    // ascolto form di create
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String store(Model model, @Valid @ModelAttribute("ticket") Ticket ticket,
             BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             List<Categoria> categorie = categoriaRepository.findAll();
+            // Solo operatori disponibili possono essere assegnati
             List<Operatore> operatori = operatoreRepository.findByDisponibile(true);
             model.addAttribute("categorie", categorie);
             model.addAttribute("operatori", operatori);
             return "tickets/create";
         }
+        // validazione garantita dal fatto che mostriamo solo operatori
+        // disponibili
 
         ticketRepository.save(ticket);
         return "redirect:/tickets";
     }
 
     @GetMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String edit(Model model, @PathVariable Integer id) {
         Optional<Ticket> ticketOpt = ticketRepository.findById(id);
 
@@ -117,9 +128,11 @@ public class TicketController {
     }
 
     @PostMapping("/edit/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String update(Model model, @PathVariable Integer id,
             @Valid @ModelAttribute("ticket") Ticket formTicket,
             BindingResult bindingResult) {
+
         if (bindingResult.hasErrors()) {
             List<Categoria> categorie = categoriaRepository.findAll();
             List<Operatore> operatori = operatoreRepository.findByDisponibile(true);
@@ -136,37 +149,37 @@ public class TicketController {
     }
 
     @PostMapping("/delete/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String delete(@PathVariable Integer id) {
-        ticketRepository.deleteById(id);
+
+        // esiste il ticket??
+        Optional<Ticket> ticketOpt = ticketRepository.findById(id);
+        if (ticketOpt.isPresent()) {
+            Ticket ticket = ticketOpt.get();
+
+            // elimina prima note
+            if (ticket.getNote() != null && !ticket.getNote().isEmpty()) {
+                notaRepository.deleteAll(ticket.getNote());
+            }
+            // poi elimina il ticket
+            ticketRepository.deleteById(id);
+        }
+
         return "redirect:/tickets";
     }
 
-    // LOGICA delle note
-    @PostMapping("/{id}/note")
-    public String addNota(@PathVariable Integer id,
-            @RequestParam String testo) {
-
-        if (testo == null || testo.trim().isEmpty()) {
-            return "redirect:/tickets/" + id;
-        }
+    // aggiorna stato ticket
+    @PostMapping("/{id}/update-status")
+    public String updateStatus(@PathVariable Integer id, @RequestParam String stato) {
 
         Optional<Ticket> ticketOpt = ticketRepository.findById(id);
-        if (ticketOpt.isEmpty()) {
-            return "redirect:/tickets";
+
+        if (ticketOpt.isPresent()) {
+            Ticket ticket = ticketOpt.get();
+            ticket.setStato(Ticket.Status.valueOf(stato));
+            ticketRepository.save(ticket);
         }
-
-        // Testingggggg
-        Optional<Operatore> operatoreOpt = operatoreRepository.findById(2);
-        if (operatoreOpt.isEmpty()) {
-            return "redirect:/tickets/" + id;
-        }
-
-        Nota nota = new Nota();
-        nota.setTesto(testo.trim());
-        nota.setTicket(ticketOpt.get());
-        nota.setAutore(operatoreOpt.get());
-        notaRepository.save(nota);
-
         return "redirect:/tickets/" + id;
     }
+
 }
