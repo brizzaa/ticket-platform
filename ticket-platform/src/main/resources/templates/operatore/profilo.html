@@ -12,7 +12,7 @@
     <div class="container mt-4" th:object="${operatore}">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2>Il Mio Profilo</h2>
-            <a th:href="@{/tickets}" class="btn btn-secondary">
+            <a th:href="@{/tickets}" class="btn btn-secondary" sec:authorize="hasAuthority('ADMIN')">
                 Torna ai Ticket
             </a>
         </div>
@@ -25,23 +25,30 @@
             aggiornato
         </div>
 
-        <div class="row mb-4">
-            <div class="col-md-8">
-                <p><strong>Username:</strong> <span th:text="*{username}"></span></p>
-                <p><strong>ID:</strong> <span th:text="*{id}"></span></p>
-                <p><strong>Ruoli:</strong>
-                    <span th:each="ruolo : *{roles}">
-                        <span class="badge bg-primary" th:text="${ruolo.ruolo}"></span>
-                    </span>
-                </p>
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h5 class="mb-3">Informazioni Profilo</h5>
+                <div class="mb-2">
+                    <strong>Username:</strong> <span th:text="*{username}"></span>
+                </div>
+                <div class="mb-2">
+                    <strong>Ticket Attivi:</strong>
+                    <span class="badge bg-primary ms-1" th:text="${ticketAttivi}"></span>
+                </div>
+                <div class="mb-2">
+                    <strong>Ticket Completati:</strong>
+                    <span class="badge bg-success ms-1" th:text="${ticketCompletati}"></span>
+                </div>
             </div>
-            <div class="col-md-4">
-                <p><strong>Stato:</strong>
-                    <span class="badge" th:classappend="*{disponibile} ? 'bg-success' : 'bg-danger'"
+            <div class="col-md-6">
+                <h5 class="mb-3">Stato Disponibilità</h5>
+                <div class="mb-3">
+                    <strong>Stato Attuale:</strong>
+                    <span class="badge fs-6 ms-2" th:classappend="*{disponibile} ? 'bg-success' : 'bg-danger'"
                         th:text="*{disponibile} ? 'DISPONIBILE' : 'NON DISPONIBILE'"></span>
-                </p>
+                </div>
 
-                <form th:action="@{/operatore/toggle-disponibilita}" method="POST" class="mt-3">
+                <form th:action="@{/operatore/toggle-disponibilita}" method="POST">
                     <button th:if="!*{disponibile}" type="submit" name="disponibile" value="true"
                         class="btn btn-success">
                         Diventa Disponibile
@@ -55,6 +62,45 @@
 
                 <div th:if="${ticketAttivi > 0}" class="text-muted mt-2">
                     <small>Non puoi diventare non disponibile con ticket attivi.</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- I Miei Ticket Attivi -->
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>I Miei Ticket Attivi</h5>
+                    <a th:href="@{/tickets}" class="btn btn-sm btn-outline-secondary"
+                        sec:authorize="hasAuthority('ADMIN')">
+                        Vedi tutti i ticket
+                    </a>
+                </div>
+
+                <div th:if="${ticketAttivi == 0}" class="text-center text-muted py-4">
+                    <p class="mb-0">Nessun ticket attivo al momento.</p>
+                </div>
+
+                <div th:unless="${ticketAttivi == 0}" class="row">
+                    <div th:each="ticket : ${ticketAssegnati}"
+                        th:if="${ticket.stato.name() == 'DA_FARE' or ticket.stato.name() == 'IN_CORSO'}"
+                        class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="card-title mb-0" th:text="${ticket.nome}"></h6>
+                                    <span class="badge"
+                                        th:classappend="${ticket.stato.name() == 'DA_FARE'} ? 'bg-warning text-dark' : 'bg-primary'"
+                                        th:text="${ticket.stato}"></span>
+                                </div>
+                                <div class="text-end">
+                                    <a class="btn btn-sm btn-primary" th:href="@{/tickets/{id}(id=${ticket.id})}">
+                                        Guarda tcket
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -5,6 +5,12 @@ import com.wdpt6.ticket_platform.model.Ticket;
 import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
+
         List<Ticket> findByNomeContainingIgnoreCase(String nome);
 
+        List<Ticket> findByCategoriaId(Integer categoriaId);
+
+        List<Ticket> findByStato(Ticket.Status stato);
+
+        List<Ticket> findByOperatoreId(Integer operatoreId);
 }

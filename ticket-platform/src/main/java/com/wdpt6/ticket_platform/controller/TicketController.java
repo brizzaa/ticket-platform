@@ -24,6 +24,7 @@ import com.wdpt6.ticket_platform.repository.TicketRepository;
 
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 
 @Controller
 @RequestMapping("/tickets")
@@ -43,13 +44,20 @@ public class TicketController {
     private NotaRepository notaRepository;
 
     @GetMapping // get su ("tickets") index
-    public String listaTicket(Model model, @RequestParam(required = false) String search) {
+    public String listaTicket(Model model, @RequestParam(required = false) String search,
+            Authentication authentication) {
+        // se non è un admin reindirizza al suo profilo
+        String authorities = authentication.getAuthorities().toString();
+        if (authorities.contains("OPERATORE") && !authorities.contains("ADMIN")) {
+            return "redirect:/operatore/profilo";
+        }
+
         List<Ticket> tickets;
 
         if (search != null) {
             tickets = ticketRepository.findByNomeContainingIgnoreCase(search);
         } else {
-            // trovo tutti i tickets
+
             tickets = ticketRepository.findAll();
         }
 
@@ -176,6 +184,7 @@ public class TicketController {
 
         if (ticketOpt.isPresent()) {
             Ticket ticket = ticketOpt.get();
+            // converto la stringa in enum
             ticket.setStato(Ticket.Status.valueOf(stato));
             ticketRepository.save(ticket);
         }

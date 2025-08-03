@@ -15,6 +15,9 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "note")
 public class Nota {
@@ -29,11 +32,13 @@ public class Nota {
     private String testo;
 
     @Column(name = "data_creazione")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataCreazione;
 
     @ManyToOne
     @JoinColumn(name = "ticket_id", nullable = false)
     @NotNull
+    @JsonBackReference
     private Ticket ticket;
 
     @ManyToOne
@@ -86,6 +91,7 @@ public class Nota {
         this.dataCreazione = LocalDateTime.now();
     }
 
+    // alla fine non lo uso
     @Override
     public String toString() {
         return this.testo + " - " + this.dataCreazione + " - " + this.autore.getUsername();

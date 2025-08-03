@@ -26,7 +26,7 @@ public class SecurityConfiguration {
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 http
                                 .authorizeHttpRequests(requests -> requests
-                                                .requestMatchers("/login", "/css/**", "/js/**")
+                                                .requestMatchers("/login", "/css/**", "/js/**", "/api/**")
                                                 .permitAll()
 
                                                 // Admin === accesso completo a tutti i ticket e dashboard
@@ -34,7 +34,8 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/tickets/create", "/tickets/*/edit",
                                                                 "/tickets/*/delete")
                                                 .hasAuthority("ADMIN")
-                                                // Operatore e Admin === profilo personale
+
+                                                // Sia admin che operatori possono accedere al profilo
                                                 .requestMatchers("/operatore/**").hasAnyAuthority("ADMIN", "OPERATORE")
                                                 .requestMatchers("/tickets/assigned").hasAuthority("OPERATORE")
                                                 .requestMatchers("/tickets/*/view")
@@ -44,6 +45,8 @@ public class SecurityConfiguration {
                                                 .requestMatchers("/tickets/*/add-note")
                                                 .hasAnyAuthority("ADMIN", "OPERATORE")
                                                 .requestMatchers("/profile").hasAnyAuthority("ADMIN", "OPERATORE")
+
+                                                // Tutto il resto richiede autenticazione
                                                 .anyRequest().authenticated())
 
                                 .formLogin(form -> form
@@ -67,9 +70,11 @@ public class SecurityConfiguration {
                 return authProvider;
         }
 
+        // per ora uso NoOpPasswordEncoder (password in chiaro)
         @Bean
         @SuppressWarnings("deprecation")
         public PasswordEncoder passwordEncoder() {
+
                 return NoOpPasswordEncoder.getInstance();
         }
 }

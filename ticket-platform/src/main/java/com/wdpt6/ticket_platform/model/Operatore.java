@@ -16,6 +16,8 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "operatori")
 public class Operatore {
@@ -30,15 +32,18 @@ public class Operatore {
 
     @Column(name = "password")
     @NotBlank(message = "La password non puo essere vuota")
+    @JsonIgnore
     private String password;
 
     @Column(name = "disponibile")
     private boolean disponibile;
 
     @OneToMany(mappedBy = "operatore")
+    @JsonIgnore
     private List<Ticket> ticketAssegnati;
 
     @OneToMany(mappedBy = "autore")
+    @JsonIgnore
     private List<Nota> noteScritte;
 
     @ManyToMany(fetch = FetchType.EAGER)

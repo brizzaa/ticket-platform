@@ -19,6 +19,9 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "tickets")
 public class Ticket {
@@ -47,19 +50,23 @@ public class Ticket {
     private Status stato;
 
     @Column(name = "data_creazione")
+    @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
     private LocalDateTime dataCreazione;
 
     @ManyToOne
     @JoinColumn(name = "operatore_id", nullable = false)
     @NotNull(message = "L'operatore è obbligatorio")
+    @JsonIgnoreProperties({ "ticketAssegnati", "noteScritte", "roles" })
     private Operatore operatore;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
     @NotNull(message = "La categoria è obbligatoria")
+    @JsonIgnoreProperties({ "tickets" })
     private Categoria categoria;
 
     @OneToMany(mappedBy = "ticket")
+    @JsonIgnoreProperties({ "ticket", "autore" })
     private List<Nota> note;
 
     public String getNome() {
@@ -126,7 +133,6 @@ public class Ticket {
         this.categoria = categoria;
     }
 
-    // METODI ALLA CREAZIONE DI UN NUOVO TICKET
     @PrePersist
     public void prePersist() {
         this.dataCreazione = LocalDateTime.now();
